@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
-using System.Linq;
+using System.Drawing.Drawing2D;
 using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Windows.Forms; 
 
 namespace Lab6
 {
@@ -90,6 +88,40 @@ namespace Lab6
             if (scale == 0f) return;
             g.ScaleTransform(scale, scale);
             g.TranslateTransform(offset, offset);
+        }
+
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            // create graphics object and apply transform
+            Graphics g = CreateGraphics();
+            ApplyTransform(g);
+
+            // get mouse click coords
+            PointF[] p = { new Point(e.X, e.Y) };
+            g.TransformPoints(CoordinateSpace.World,
+            CoordinateSpace.Device, p);
+
+            // handle on and off board clicks
+            if (p[0].X < 0 || p[0].Y < 0) return;
+            int i = (int)(p[0].X / block);
+            int j = (int)(p[0].Y / block);
+            if (i > 2 || j > 2) return;
+
+            // sets cell to be empty
+            if (e.Button == MouseButtons.Middle) grid[i, j] =
+            CellSelection.N;
+
+            // only allow setting empty cells 
+            if (grid[i, j] == CellSelection.N)
+            {
+                if (e.Button == MouseButtons.Left) 
+                    grid[i, j] = CellSelection.O;
+                if (e.Button == MouseButtons.Right) 
+                    grid[i, j] = CellSelection.X;
+            }
+
+            // must invalidate
+            Invalidate(); 
         } 
     }
 }

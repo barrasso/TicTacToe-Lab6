@@ -24,12 +24,11 @@ namespace Lab6
         // inside border of X or O
         private const float delta = 5;
 
-        // init 2d array and instantiate it
-        private enum CellSelection { N, O, X };
-        private CellSelection[,] grid = new CellSelection[3, 3];
-
         // scale factor
         private float scale;
+
+        // game object
+        public GameEngine currentGame;
 
         public Form1()
         {
@@ -38,7 +37,9 @@ namespace Lab6
             // resize redraw
             ResizeRedraw = true;
 
-            // get status of grid from game engine
+
+            // init game obj
+            currentGame = new GameEngine();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -58,8 +59,8 @@ namespace Lab6
             // draw O's and X's at specified coords within 3x3 grid
             for (int i = 0; i < 3; ++i) 
                 for (int j = 0; j < 3; ++j) 
-                    if (grid[i, j] == CellSelection.O) DrawO(i, j, g);
-                    else if (grid[i, j] == CellSelection.X) DrawX(i, j,
+                    if (currentGame.grid[i, j] == GameEngine.CellSelection.O) DrawO(i, j, g);
+                    else if (currentGame.grid[i, j] == GameEngine.CellSelection.X) DrawX(i, j,
                     g); 
         }
 
@@ -101,27 +102,30 @@ namespace Lab6
             g.TransformPoints(CoordinateSpace.World,
             CoordinateSpace.Device, p);
 
-            // handle on and off board clicks
-            if (p[0].X < 0 || p[0].Y < 0) return;
-            int i = (int)(p[0].X / block);
-            int j = (int)(p[0].Y / block);
-            if (i > 2 || j > 2) return;
+            // check user click
+            currentGame = currentGame.checkUserClick(e, p, currentGame);
 
-            // sets cell to be empty
-            if (e.Button == MouseButtons.Middle) grid[i, j] =
-            CellSelection.N;
-
-            // only allow setting empty cells 
-            if (grid[i, j] == CellSelection.N)
-            {
-                if (e.Button == MouseButtons.Left) 
-                    grid[i, j] = CellSelection.O;
-                if (e.Button == MouseButtons.Right) 
-                    grid[i, j] = CellSelection.X;
-            }
+            // if first move, disable computer starts button
+            if (currentGame.turnCount == 1)
+                computerStartsToolStripMenuItem.Enabled = false;
 
             // must invalidate
             Invalidate(); 
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // restart game
+
+        }
+
+        private void computerStartsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // set computer's turn
+            currentGame.isComputersTurn = true;
+
+            // disable button
+            computerStartsToolStripMenuItem.Enabled = false;
         } 
     }
 }

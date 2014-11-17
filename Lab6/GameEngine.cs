@@ -53,10 +53,14 @@ namespace Lab6
                 current.turnCount++;
 
                 // check for winner
-                this.checkForWinner();
+                if (this.checkForWinner()) return current;
 
                 // set computer's turn
                 current.isComputersTurn = true;
+
+                if (current.isComputersTurn)
+                    // computer make move
+                    this.computerMove(current);
 
                 return current;
             }
@@ -70,10 +74,21 @@ namespace Lab6
         }
 
         // handle the computer moves
-        //public void computerMove
-        //{
+        public void computerMove(GameEngine current)
+        {
+            // make O move
+            grid[1, 1] = CellSelection.O;
 
-        //}
+            // check for winner
+            if (this.checkForWinner()) return;
+
+            // increment count
+            current.turnCount++;
+            Console.WriteLine("Turn: {0}", current.turnCount);
+
+            // set user's turn
+            current.isComputersTurn = false;
+        }
 
         // check for winner
         public bool checkForWinner()

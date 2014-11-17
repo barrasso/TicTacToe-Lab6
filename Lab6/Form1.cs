@@ -106,7 +106,7 @@ namespace Lab6
             currentGame = currentGame.checkUserClick(e, p, currentGame);
 
             // if first move, disable computer starts button
-            if (currentGame.turnCount == 1)
+            if (currentGame.turnCount >= 1)
                 computerStartsToolStripMenuItem.Enabled = false;
 
             // must invalidate
@@ -116,16 +116,24 @@ namespace Lab6
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // restart game
+            currentGame = new GameEngine();
+            computerStartsToolStripMenuItem.Enabled = true;
 
+            // must invalidate
+            Invalidate();
         }
 
         private void computerStartsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // set computer's turn
             currentGame.isComputersTurn = true;
+            currentGame.computerMove(currentGame);
 
             // disable button
             computerStartsToolStripMenuItem.Enabled = false;
+
+            // must invalidate
+            Invalidate();
         } 
     }
 }

@@ -20,6 +20,9 @@ namespace Lab6
 
         // turn count
         public int turnCount;
+        
+        // check for game over
+        public bool isGameOver;
 
         // check for comp turn
         public bool isComputersTurn;
@@ -28,6 +31,7 @@ namespace Lab6
         public GameEngine()
         {
             turnCount = 0;
+            isGameOver = false;
             isComputersTurn = false;
         }
 
@@ -43,7 +47,7 @@ namespace Lab6
             Console.WriteLine("{0}, {1}", i, j);
 
             // only allow setting empty cells on user turn
-            if (grid[i, j] == CellSelection.N && !current.isComputersTurn)
+            if (grid[i, j] == CellSelection.N && !current.isComputersTurn && !isGameOver)
             {
                 // set X on left click
                 if (e.Button == MouseButtons.Left)
@@ -65,19 +69,72 @@ namespace Lab6
                 return current;
             }
 
-            else
+            else if (!isGameOver)
             {
                 // display bad move alert
                 MessageBox.Show("Invalid move.");
                 return current;
             }
+
+            else return current;
         }
 
         // handle the computer moves
         public void computerMove(GameEngine current)
         {
             // make O move
-            grid[1, 1] = CellSelection.O;
+            bool madeMove = false;
+            for (int i = 0; i < 3; ++i)
+            { 
+                for (int j = 0; j < 3; ++j)
+                {
+                    if (current.grid[i, j] == GameEngine.CellSelection.X)
+                    {
+                        // check for winning move cases
+
+
+                        // check for defending move cases
+
+
+                        // check standard move cases
+                        // up case
+                        if (j>=1)
+                            if (current.grid[i, j - 1] == GameEngine.CellSelection.N)
+                            {
+                                current.grid[i, j - 1] = GameEngine.CellSelection.O;
+                                madeMove = true;
+                                break;
+                            }
+                        // down case
+                        if (j <= 1)
+                            if (current.grid[i, j + 1] == GameEngine.CellSelection.N)
+                            {
+                                current.grid[i, j + 1] = GameEngine.CellSelection.O;
+                                madeMove = true;
+                                break;
+                            }
+
+                        // left case
+                        if (i >= 1)
+                            if (current.grid[i - 1, j] == GameEngine.CellSelection.N)
+                            {
+                                current.grid[i - 1, j] = GameEngine.CellSelection.O;
+                                madeMove = true;
+                                break;
+                            }
+                        // right case
+                        if (i <= 1)
+                            if (current.grid[i + 1, j] == GameEngine.CellSelection.N)
+                            {
+                                current.grid[i + 1, j] = GameEngine.CellSelection.O;
+                                madeMove = true;
+                                break;
+                            }
+                    }
+                }
+                if (madeMove) break;
+            }
+
 
             // check for winner
             if (this.checkForWinner()) return;
@@ -93,7 +150,7 @@ namespace Lab6
         // check for winner
         public bool checkForWinner()
         {
-            return false;
+            return isGameOver;
         }
     }
 }

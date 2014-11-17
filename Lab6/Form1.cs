@@ -37,7 +37,6 @@ namespace Lab6
             // resize redraw
             ResizeRedraw = true;
 
-
             // init game obj
             currentGame = new GameEngine();
         }

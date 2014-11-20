@@ -20,9 +20,17 @@ namespace Lab6
 
         // turn count
         public int turnCount;
+
+        // check for first move
+        public bool isComputerFirstMove;
         
-        // check for game over
+        // check for game over/stalemate
         public bool isGameOver;
+        public bool isStalemate;
+        
+        // check for PC || User win
+        public bool compWins;
+        public bool userWins;
 
         // check for comp turn
         public bool isComputersTurn;
@@ -57,14 +65,21 @@ namespace Lab6
                 current.turnCount++;
 
                 // check for winner
-                if (this.checkForWinner()) return current;
+                if (this.checkForWinner(current))
+                {
+                    isGameOver = true;
+                    return current;
+                }
 
-                // set computer's turn
-                current.isComputersTurn = true;
+                if (!isGameOver)
+                {
+                    // set computer's turn
+                    current.isComputersTurn = true;
 
-                if (current.isComputersTurn)
-                    // computer make move
-                    this.computerMove(current);
+                    if (current.isComputersTurn)
+                        // computer make move
+                        this.computerMove(current);
+                }
 
                 return current;
             }
@@ -82,62 +97,109 @@ namespace Lab6
         // handle the computer moves
         public void computerMove(GameEngine current)
         {
-            // make O move
-            bool madeMove = false;
-            for (int i = 0; i < 3; ++i)
-            { 
-                for (int j = 0; j < 3; ++j)
+            // check for first move
+            if (isComputerFirstMove)
+            {
+                // randomize starting position to make Ai less predictable
+                Random rando = new Random();
+                int startSpot = rando.Next(4);
+
+                switch (startSpot)
                 {
-                    if (current.grid[i, j] == GameEngine.CellSelection.X)
-                    {
-                        // check for winning move cases
-
-
-                        // check for defending move cases
-
-
-                        // check standard move cases
-                        // up case
-                        if (j>=1)
-                            if (current.grid[i, j - 1] == GameEngine.CellSelection.N)
-                            {
-                                current.grid[i, j - 1] = GameEngine.CellSelection.O;
-                                madeMove = true;
-                                break;
-                            }
-                        // down case
-                        if (j <= 1)
-                            if (current.grid[i, j + 1] == GameEngine.CellSelection.N)
-                            {
-                                current.grid[i, j + 1] = GameEngine.CellSelection.O;
-                                madeMove = true;
-                                break;
-                            }
-
-                        // left case
-                        if (i >= 1)
-                            if (current.grid[i - 1, j] == GameEngine.CellSelection.N)
-                            {
-                                current.grid[i - 1, j] = GameEngine.CellSelection.O;
-                                madeMove = true;
-                                break;
-                            }
-                        // right case
-                        if (i <= 1)
-                            if (current.grid[i + 1, j] == GameEngine.CellSelection.N)
-                            {
-                                current.grid[i + 1, j] = GameEngine.CellSelection.O;
-                                madeMove = true;
-                                break;
-                            }
-                    }
+                    case 0:
+                        // make first move
+                        if (current.grid[0, 0] == GameEngine.CellSelection.N)
+                            current.grid[0, 0] = GameEngine.CellSelection.O;
+                        break;
+                    case 1:
+                        // make first move
+                        if (current.grid[2, 0] == GameEngine.CellSelection.N)
+                            current.grid[2, 0] = GameEngine.CellSelection.O;
+                        break;
+                    case 2:
+                        // make first move
+                        if (current.grid[0, 2] == GameEngine.CellSelection.N)
+                            current.grid[0, 2] = GameEngine.CellSelection.O;
+                        break;
+                    case 3:
+                        // make first move
+                        if (current.grid[2, 2] == GameEngine.CellSelection.N)
+                            current.grid[2, 2] = GameEngine.CellSelection.O;
+                        break;
+                    default:
+                        // make first move
+                        if (current.grid[0, 0] == GameEngine.CellSelection.N)
+                            current.grid[0, 0] = GameEngine.CellSelection.O;
+                        break;
                 }
-                if (madeMove) break;
+                isComputerFirstMove = false;
+            }
+
+            else if (!isComputerFirstMove)
+            {
+                // make O move
+                bool madeMove = false;
+                for (int i = 0; i < 3; ++i)
+                {
+                    for (int j = 0; j < 3; ++j)
+                    {
+
+                        // check against X
+                        if (current.grid[i, j] == GameEngine.CellSelection.X)
+                        {
+                            // go for winning move cases
+
+
+                            // go for defending move cases
+
+
+                            // check standard move cases
+                            // up case
+                            if (j >= 1)
+                                if (current.grid[i, j - 1] == GameEngine.CellSelection.N)
+                                {
+                                    current.grid[i, j - 1] = GameEngine.CellSelection.O;
+                                    madeMove = true;
+                                    break;
+                                }
+                            // down case
+                            if (j <= 1)
+                                if (current.grid[i, j + 1] == GameEngine.CellSelection.N)
+                                {
+                                    current.grid[i, j + 1] = GameEngine.CellSelection.O;
+                                    madeMove = true;
+                                    break;
+                                }
+                            // left case
+                            if (i >= 1)
+                                if (current.grid[i - 1, j] == GameEngine.CellSelection.N)
+                                {
+                                    current.grid[i - 1, j] = GameEngine.CellSelection.O;
+                                    madeMove = true;
+                                    break;
+                                }
+                            // right case
+                            if (i <= 1)
+                                if (current.grid[i + 1, j] == GameEngine.CellSelection.N)
+                                {
+                                    current.grid[i + 1, j] = GameEngine.CellSelection.O;
+                                    madeMove = true;
+                                    break;
+                                }
+                        }
+                    }
+                    if (madeMove) break;
+                }
             }
 
 
             // check for winner
-            if (this.checkForWinner()) return;
+            if (this.checkForWinner(current))
+            {
+                // game over
+                isGameOver = true;
+                return;
+            }
 
             // increment count
             current.turnCount++;
@@ -148,9 +210,155 @@ namespace Lab6
         }
 
         // check for winner
-        public bool checkForWinner()
+        public bool checkForWinner(GameEngine current)
         {
-            return isGameOver;
+            // check rows for X
+            if (current.grid[0, 0] == GameEngine.CellSelection.X && current.grid[1, 0] == GameEngine.CellSelection.X && current.grid[2, 0] == GameEngine.CellSelection.X)
+            {
+                userWins = true;
+                this.gameOver(userWins);
+                return userWins;
+            }
+            if (current.grid[0, 1] == GameEngine.CellSelection.X && current.grid[1, 1] == GameEngine.CellSelection.X && current.grid[2, 1] == GameEngine.CellSelection.X)
+            {
+                userWins = true;
+                this.gameOver(userWins);
+                return userWins;
+            }
+            if (current.grid[0, 2] == GameEngine.CellSelection.X && current.grid[1, 2] == GameEngine.CellSelection.X && current.grid[2, 2] == GameEngine.CellSelection.X)
+            {
+                userWins = true;
+                this.gameOver(userWins);
+                return userWins;
+            }
+            // check rows for O
+            if (current.grid[0, 0] == GameEngine.CellSelection.O && current.grid[1, 0] == GameEngine.CellSelection.O && current.grid[2, 0] == GameEngine.CellSelection.O)
+            {
+                compWins = true;
+                this.gameOver(compWins);
+                return compWins;
+            }
+            if (current.grid[0, 1] == GameEngine.CellSelection.O && current.grid[1, 1] == GameEngine.CellSelection.O && current.grid[2, 1] == GameEngine.CellSelection.O)
+            {
+                compWins = true;
+                this.gameOver(compWins);
+                return compWins;
+            }
+            if (current.grid[0, 2] == GameEngine.CellSelection.O && current.grid[1, 2] == GameEngine.CellSelection.O && current.grid[2, 2] == GameEngine.CellSelection.O)
+            {
+                compWins = true;
+                this.gameOver(compWins);
+                return compWins;
+            }
+
+            // check columns for X
+            if (current.grid[0, 0] == GameEngine.CellSelection.X && current.grid[0, 1] == GameEngine.CellSelection.X && current.grid[0, 2] == GameEngine.CellSelection.X)
+            {
+                userWins = true;
+                this.gameOver(userWins);
+                return userWins;
+            }
+            if (current.grid[1, 0] == GameEngine.CellSelection.X && current.grid[1, 1] == GameEngine.CellSelection.X && current.grid[1, 2] == GameEngine.CellSelection.X)
+            {
+                userWins = true;
+                this.gameOver(userWins);
+                return userWins;
+            }
+            if (current.grid[2, 0] == GameEngine.CellSelection.X && current.grid[2, 1] == GameEngine.CellSelection.X && current.grid[2, 2] == GameEngine.CellSelection.X)
+            {
+                userWins = true;
+                this.gameOver(userWins);
+                return userWins;
+            }
+            // check columns for O
+            if (current.grid[0, 0] == GameEngine.CellSelection.O && current.grid[0, 1] == GameEngine.CellSelection.O && current.grid[0, 2] == GameEngine.CellSelection.O)
+            {
+                compWins = true;
+                this.gameOver(compWins);
+                return compWins;
+            }
+            if (current.grid[1, 0] == GameEngine.CellSelection.O && current.grid[1, 1] == GameEngine.CellSelection.O && current.grid[1, 2] == GameEngine.CellSelection.O)
+            {
+                compWins = true;
+                this.gameOver(compWins);
+                return compWins;
+            }
+            if (current.grid[2, 0] == GameEngine.CellSelection.O && current.grid[2, 1] == GameEngine.CellSelection.O && current.grid[2, 2] == GameEngine.CellSelection.O)
+            {
+                compWins = true;
+                this.gameOver(compWins);
+                return compWins;
+            }
+
+            // check diagonals for X
+            if (current.grid[0, 0] == GameEngine.CellSelection.X && current.grid[1, 1] == GameEngine.CellSelection.X && current.grid[2, 2] == GameEngine.CellSelection.X)
+            {
+                userWins = true;
+                this.gameOver(userWins);
+                return userWins;
+            }
+            if (current.grid[0, 2] == GameEngine.CellSelection.X && current.grid[1, 1] == GameEngine.CellSelection.X && current.grid[2, 0] == GameEngine.CellSelection.X)
+            {
+                userWins = true;
+                this.gameOver(userWins);
+                return userWins;
+            }
+            // check diagonals for O
+            if (current.grid[0, 0] == GameEngine.CellSelection.O && current.grid[1, 1] == GameEngine.CellSelection.O && current.grid[2, 2] == GameEngine.CellSelection.O)
+            {
+                compWins = true;
+                this.gameOver(compWins);
+                return compWins;
+            }
+            if (current.grid[0, 2] == GameEngine.CellSelection.O && current.grid[1, 1] == GameEngine.CellSelection.O && current.grid[2, 0] == GameEngine.CellSelection.O)
+            {
+                compWins = true;
+                this.gameOver(compWins);
+                return compWins;
+            }
+
+            // stalemate check
+            if(checkForStalemate(current))
+            {
+                this.gameOver(isStalemate);
+                return isStalemate;
+            }
+
+            // else
+            return false;
+        }
+
+        public bool checkForStalemate(GameEngine current)
+        {
+            // check for stalemate
+            for (int i = 0; i < 3; ++i)
+            {
+                for (int j = 0; j < 3; ++j)
+                {
+                    // if there is an empty space
+                    if (current.grid[i, j] == GameEngine.CellSelection.N)
+                    {
+                        // no stalemate
+                        isStalemate = false;
+                        return false;
+                    }
+                }
+            }
+
+            // would have returned by now if a space was empty
+            // if no spaces are empty
+            isStalemate = true;
+            return isStalemate;
+        }
+
+        public void gameOver(bool winner)
+        {
+            if (userWins)
+                MessageBox.Show("You win!");
+            else if (compWins)
+                MessageBox.Show("You lose!");
+            else if (isStalemate)
+                MessageBox.Show("Draw!");
         }
     }
 }

@@ -126,6 +126,7 @@ namespace Lab6
         {
             // set computer's turn
             currentGame.isComputersTurn = true;
+            currentGame.isComputerFirstMove = true;
             currentGame.computerMove(currentGame);
 
             // disable button

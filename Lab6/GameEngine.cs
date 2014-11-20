@@ -35,6 +35,20 @@ namespace Lab6
         // check for comp turn
         public bool isComputersTurn;
 
+        // counters
+        public int mid0;
+        public int mid1;
+        public int mid2;
+        public int mid3;
+        public int col0;
+        public int col1;
+        public int col2;
+        public int row0;
+        public int row1;
+        public int row2;
+        public int diag0;
+        public int diag1;
+
         // default constructor
         public GameEngine()
         {
@@ -100,99 +114,165 @@ namespace Lab6
             // check for first move
             if (isComputerFirstMove)
             {
-                // randomize starting position to make Ai less predictable
-                Random rando = new Random();
-                int startSpot = rando.Next(4);
+                // make first move
+                if (current.grid[1, 1] == GameEngine.CellSelection.N)
+                    current.grid[1, 1] = GameEngine.CellSelection.O;
 
-                switch (startSpot)
-                {
-                    case 0:
-                        // make first move
-                        if (current.grid[0, 0] == GameEngine.CellSelection.N)
-                            current.grid[0, 0] = GameEngine.CellSelection.O;
-                        break;
-                    case 1:
-                        // make first move
-                        if (current.grid[2, 0] == GameEngine.CellSelection.N)
-                            current.grid[2, 0] = GameEngine.CellSelection.O;
-                        break;
-                    case 2:
-                        // make first move
-                        if (current.grid[0, 2] == GameEngine.CellSelection.N)
-                            current.grid[0, 2] = GameEngine.CellSelection.O;
-                        break;
-                    case 3:
-                        // make first move
-                        if (current.grid[2, 2] == GameEngine.CellSelection.N)
-                            current.grid[2, 2] = GameEngine.CellSelection.O;
-                        break;
-                    default:
-                        // make first move
-                        if (current.grid[0, 0] == GameEngine.CellSelection.N)
-                            current.grid[0, 0] = GameEngine.CellSelection.O;
-                        break;
-                }
                 isComputerFirstMove = false;
             }
 
             else if (!isComputerFirstMove)
             {
-                // make O move
+                // scan + map board
+                for (int i = 0; i < 3; ++i)
+                {
+                    for (int j = 0; j < 3; ++j)
+                    {
+                        // check if O
+                        if (current.grid[i, j] == GameEngine.CellSelection.O)
+                        {
+                            // mark mid 2,3
+                            if (i == 1 && j == 1)
+                            { mid2++; mid3++; } 
+
+                            // bottom left to top right
+                            if (i == 0 && j == 2) mid2++;
+                            if (i == 2 && j == 0) mid2++;
+
+                            // top left to bottom right
+                            if (i == 0 && j == 0) mid3++;
+                            if (i == 2 && j == 2) mid3++;
+
+                            // mark mid 0
+                            if (i == 0 && j == 1) mid0++;
+                            if (i == 1 && j == 1) mid0++;
+                            if (i == 2 && j == 1) mid0++;
+
+                            // mark mid 1
+                            if (i == 1 && j == 0) mid1++;
+                            if (i == 1 && j == 1) mid1++;
+                            if (i == 1 && j == 2) mid1++;
+                        }
+
+                        // check if X
+                        if (current.grid[i, j] == GameEngine.CellSelection.X)
+                        {
+                            // mark diags
+                            if (i == 1 && j == 1)
+                            { diag0++; diag1++; } 
+
+                            // bottom left to top right
+                            if (i == 0 && j == 2) diag0++;
+                            if (i == 2 && j == 0) diag0++;
+
+                            // top left to bottom right
+                            if (i == 0 && j == 0) diag1++;
+                            if (i == 2 && j == 2) diag1++;
+
+                            // mark cols
+                            switch (i)
+                            {
+                                case 0:
+                                    col0++;
+                                    Console.WriteLine("I see an X at {0},{1}", i, j);
+                                    break;
+                                case 1:
+                                    col1++;
+                                    Console.WriteLine("I see an X at {0},{1}", i, j);
+                                    break;
+                                case 2:
+                                    col2++;
+                                    Console.WriteLine("I see an X at {0},{1}", i, j);
+                                    break;
+                            }
+                            // mark rows
+                            switch (j)
+                            {
+
+                                case 0:
+                                    row0++;
+                                    Console.WriteLine("I see an X at {0},{1}", i, j);
+                                    break;
+                                case 1:
+                                    row1++;
+                                    Console.WriteLine("I see an X at {0},{1}", i, j);
+                                    break;
+                                case 2:
+                                    row2++;
+                                    Console.WriteLine("I see an X at {0},{1}", i, j);
+                                    break;
+                            }
+                        }
+                    }
+                }
+
+
+                Console.WriteLine("Making move...");
+                // make best possible O move
                 bool madeMove = false;
                 for (int i = 0; i < 3; ++i)
                 {
                     for (int j = 0; j < 3; ++j)
                     {
-
-                        // check against X
-                        if (current.grid[i, j] == GameEngine.CellSelection.X)
+                        // the best defense is the best offense
+                        if (current.grid[1, 1] == GameEngine.CellSelection.O)
                         {
-                            // go for winning move cases
+                            if (current.grid[0, 0] == GameEngine.CellSelection.O && current.grid[2, 2] == GameEngine.CellSelection.N) { current.grid[2, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+                            if (current.grid[0, 0] == GameEngine.CellSelection.N && current.grid[2, 2] == GameEngine.CellSelection.O) { current.grid[0, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
 
-
-                            // go for defending move cases
-
-
-                            // check standard move cases
-                            // up case
-                            if (j >= 1)
-                                if (current.grid[i, j - 1] == GameEngine.CellSelection.N)
-                                {
-                                    current.grid[i, j - 1] = GameEngine.CellSelection.O;
-                                    madeMove = true;
-                                    break;
-                                }
-                            // down case
-                            if (j <= 1)
-                                if (current.grid[i, j + 1] == GameEngine.CellSelection.N)
-                                {
-                                    current.grid[i, j + 1] = GameEngine.CellSelection.O;
-                                    madeMove = true;
-                                    break;
-                                }
-                            // left case
-                            if (i >= 1)
-                                if (current.grid[i - 1, j] == GameEngine.CellSelection.N)
-                                {
-                                    current.grid[i - 1, j] = GameEngine.CellSelection.O;
-                                    madeMove = true;
-                                    break;
-                                }
-                            // right case
-                            if (i <= 1)
-                                if (current.grid[i + 1, j] == GameEngine.CellSelection.N)
-                                {
-                                    current.grid[i + 1, j] = GameEngine.CellSelection.O;
-                                    madeMove = true;
-                                    break;
-                                }
+                            if (current.grid[0, 2] == GameEngine.CellSelection.O && current.grid[2, 0] == GameEngine.CellSelection.N) { current.grid[2, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                            if (current.grid[0, 2] == GameEngine.CellSelection.N && current.grid[2, 0] == GameEngine.CellSelection.O) { current.grid[0, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
                         }
+                        if (mid0 == 2 && current.grid[0, 1] == GameEngine.CellSelection.N) { current.grid[0, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (mid0 == 2 && current.grid[2, 1] == GameEngine.CellSelection.N) { current.grid[2, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (mid1 == 2 && current.grid[1, 0] == GameEngine.CellSelection.N) { current.grid[1, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (mid1 == 2 && current.grid[1, 2] == GameEngine.CellSelection.N) { current.grid[1, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+
+                        // check for win
+                        if (diag0 == 2 && current.grid[0, 2] == GameEngine.CellSelection.N) { current.grid[0, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (diag0 == 2 && current.grid[1, 1] == GameEngine.CellSelection.N) { current.grid[1, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (diag0 == 2 && current.grid[2, 0] == GameEngine.CellSelection.N) { current.grid[2, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (diag1 == 2 && current.grid[0, 0] == GameEngine.CellSelection.N) { current.grid[0, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (diag1 == 2 && current.grid[1, 1] == GameEngine.CellSelection.N) { current.grid[1, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (diag1 == 2 && current.grid[2, 2] == GameEngine.CellSelection.N) { current.grid[2, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+
+                        if (row0 == 2 && current.grid[0, 0] == GameEngine.CellSelection.N) { current.grid[0, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (row0 == 2 && current.grid[1, 0] == GameEngine.CellSelection.N) { current.grid[1, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (row0 == 2 && current.grid[2, 0] == GameEngine.CellSelection.N) { current.grid[2, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (row1 == 2 && current.grid[0, 1] == GameEngine.CellSelection.N) { current.grid[0, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (row1 == 2 && current.grid[1, 1] == GameEngine.CellSelection.N) { current.grid[1, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (row1 == 2 && current.grid[2, 1] == GameEngine.CellSelection.N) { current.grid[2, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (row2 == 2 && current.grid[0, 2] == GameEngine.CellSelection.N) { current.grid[0, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (row2 == 2 && current.grid[1, 2] == GameEngine.CellSelection.N) { current.grid[1, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (row2 == 2 && current.grid[2, 2] == GameEngine.CellSelection.N) { current.grid[2, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+
+                        if (col0 == 2 && current.grid[0, 0] == GameEngine.CellSelection.N) { current.grid[0, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (col0 == 2 && current.grid[0, 1] == GameEngine.CellSelection.N) { current.grid[0, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (col0 == 2 && current.grid[0, 2] == GameEngine.CellSelection.N) { current.grid[0, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (col1 == 2 && current.grid[1, 0] == GameEngine.CellSelection.N) { current.grid[1, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (col1 == 2 && current.grid[1, 1] == GameEngine.CellSelection.N) { current.grid[1, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (col1 == 2 && current.grid[1, 2] == GameEngine.CellSelection.N) { current.grid[1, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (col2 == 2 && current.grid[2, 0] == GameEngine.CellSelection.N) { current.grid[2, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (col2 == 2 && current.grid[2, 1] == GameEngine.CellSelection.N) { current.grid[2, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (col2 == 2 && current.grid[2, 2] == GameEngine.CellSelection.N) { current.grid[2, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+
+                        // check for empty center
+                        if (current.grid[1, 1] == GameEngine.CellSelection.N) { current.grid[1, 1] = GameEngine.CellSelection.O; madeMove = true; break; }
+
+                        // check for empty corners
+                        if (current.grid[0, 0] == GameEngine.CellSelection.N) { current.grid[0, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (current.grid[0, 2] == GameEngine.CellSelection.N) { current.grid[0, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (current.grid[2, 0] == GameEngine.CellSelection.N) { current.grid[2, 0] = GameEngine.CellSelection.O; madeMove = true; break; }
+                        if (current.grid[2, 2] == GameEngine.CellSelection.N) { current.grid[2, 2] = GameEngine.CellSelection.O; madeMove = true; break; }
+
+                        // default move
+                        if (current.grid[i, j] == GameEngine.CellSelection.N) { current.grid[i, j] = GameEngine.CellSelection.O; madeMove = true; break; }
                     }
                     if (madeMove) break;
                 }
             }
 
-
+               
             // check for winner
             if (this.checkForWinner(current))
             {
@@ -205,8 +285,25 @@ namespace Lab6
             current.turnCount++;
             Console.WriteLine("Turn: {0}", current.turnCount);
 
+            // reset counters
+            this.resetCounters();
+            
             // set user's turn
             current.isComputersTurn = false;
+        }
+
+        public void resetCounters()
+        {
+            mid0 = 0;
+            mid1 = 0;
+            col0 = 0;
+            col1 = 0;
+            col2 = 0;
+            row0 = 0;
+            row1 = 0;
+            row2 = 0;
+            diag0 = 0;
+            diag1 = 0;
         }
 
         // check for winner
